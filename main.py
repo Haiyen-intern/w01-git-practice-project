@@ -5,9 +5,15 @@ from sqlalchemy.orm import Session
 from app.database import Base, engine, get_db
 from app.models import Book
 
+from app.admin import setup_admin
+from app.database import engine
+
+
 app = FastAPI(title="Books API")
+
 Base.metadata.create_all(bind=engine)
 
+setup_admin(app, engine)
 
 class BookCreate(BaseModel):
     title: str
