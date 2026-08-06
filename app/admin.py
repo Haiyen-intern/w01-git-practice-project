@@ -3,7 +3,7 @@ from app.models import Book
 
 
 class BookAdmin(ModelView, model=Book):
-    column_list = [Book.id, Book.title, Book.author, Book.year]
+    column_list = [Book.id, Book.title, Book.author, Book.year, Book.summary]
 
     name = "Book"
     name_plural = "Books"
