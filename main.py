@@ -49,7 +49,9 @@ def get_author(author_id: int, db: Session = Depends(get_db)):
     return author
 
 
-@app.post("/authors", response_model=AuthorResponse, status_code=status.HTTP_201_CREATED)
+@app.post(
+    "/authors", response_model=AuthorResponse, status_code=status.HTTP_201_CREATED
+)
 def create_author(payload: AuthorCreate, db: Session = Depends(get_db)):
     author = Author(name=payload.name)
     db.add(author)
@@ -73,7 +75,6 @@ def get_book(book_id: int, db: Session = Depends(get_db)):
     book = db.get(Book, book_id)
     if book is None:
         raise HTTPException(status_code=404, detail="Book not found")
-    return book
 
 
 @app.post("/books", response_model=BookResponse, status_code=status.HTTP_201_CREATED)
@@ -82,7 +83,6 @@ def create_book(payload: BookCreate, db: Session = Depends(get_db)):
         author = db.get(Author, payload.author_id)
         if author is None:
             raise HTTPException(status_code=404, detail="Author not found")
-
     new_book = Book(
         title=payload.title,
         year=payload.year,
@@ -105,7 +105,6 @@ def update_book(book_id: int, payload: BookCreate, db: Session = Depends(get_db)
         author = db.get(Author, payload.author_id)
         if author is None:
             raise HTTPException(status_code=404, detail="Author not found")
-
     book.title = payload.title
     book.year = payload.year
     book.summary = payload.summary
