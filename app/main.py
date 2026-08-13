@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
 from app.admin import setup_admin
-from app.api.routers import authors, book
-from app.models import Author, Book
+from app.api.routers import authors, book, categories
+from app.models import Author, Book, Category
 from app.core.config import get_settings
 from app.db.database import Base
 from app.db.session import engine
@@ -16,7 +16,7 @@ setup_admin(app, engine)
 
 app.include_router(authors.router, prefix="/api/v1")
 app.include_router(book.router, prefix="/api/v1")
-
+app.include_router(categories.router, prefix="/api/v1")
 
 @app.get("/")
 def root() -> dict[str, str]:

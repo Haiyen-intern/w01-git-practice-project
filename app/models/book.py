@@ -14,5 +14,10 @@ class Book(Base):
     author_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("authors.id"), nullable=True
     )
+    category_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("categories.id"), nullable=True
+    )
 
     author = relationship("Author", back_populates="books")
+    category = relationship("Category", back_populates="books")
+    
