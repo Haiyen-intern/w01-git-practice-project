@@ -4,6 +4,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.db.database import DATABASE_URL, Base
+from app.models import Author, Book
 
 config = context.config
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
