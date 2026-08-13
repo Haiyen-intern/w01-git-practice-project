@@ -1,0 +1,153 @@
+### Variables
+@baseUrl = http://127.0.0.1:8000/api/v1
+
+POST {{baseUrl}}/authors
+Content-Type: application/json
+
+{
+  "name": "Robert C. Martin",
+  "bio": "Uncle Bob",
+  "country": "USA",
+  "birth_year": 1952
+}
+
+# 1. HAPPY CASES (Expected: 201 Created)
+
+
+### 1.1 Happy Case - Create Book with existing author_id
+POST {{baseUrl}}/books
+Content-Type: application/json
+
+{
+  "title": "Clean Code",
+  "year": 2008,
+  "summary": "A handbook of agile software craftsmanship",
+  "author_id": 1
+}
+
+### 1.2 Happy Case - Create Book with author_id = null
+POST {{baseUrl}}/books
+Content-Type: application/json
+
+{
+  "title": "Refactoring",
+  "year": 1999,
+  "summary": "Improving the Design of Existing Code",
+  "author_id": null
+}
+
+
+
+# 2. VALIDATION CASES (Expected: 422 Unprocessable Entity)
+
+
+### 2.1 Missing title
+POST {{baseUrl}}/books
+Content-Type: application/json
+
+{
+  "year": 2008
+}
+
+### 2.2 Missing year
+POST {{baseUrl}}/books
+Content-Type: application/json
+
+{
+  "title": "Clean Code"
+}
+
+### 2.3 Empty title
+POST {{baseUrl}}/books
+Content-Type: application/json
+
+{
+  "title": "",
+  "year": 2008
+}
+
+### 2.4 Title too long (> 200 characters)
+POST {{baseUrl}}/books
+Content-Type: application/json
+
+{
+  "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  "year": 2008
+}
+
+### 2.5 Year too small (< 1000)
+POST {{baseUrl}}/books
+Content-Type: application/json
+
+{
+  "title": "Clean Code",
+  "year": 999
+}
+
+### 2.6 Year too large (> 2100)
+POST {{baseUrl}}/books
+Content-Type: application/json
+
+{
+  "title": "Clean Code",
+  "year": 2101
+}
+
+### 2.7 Invalid year data type
+POST {{baseUrl}}/books
+Content-Type: application/json
+
+{
+  "title": "Clean Code",
+  "year": "abc"
+}
+
+### 2.8 Summary too long (> 500 characters)
+POST {{baseUrl}}/books
+Content-Type: application/json
+
+{
+  "title": "Clean Code",
+  "year": 2008,
+  "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+}
+
+
+### 3.1 Non-existent author_id (Expected: 404 Not Found)
+POST {{baseUrl}}/books
+Content-Type: application/json
+
+{
+  "title": "Clean Code",
+  "year": 2008,
+  "author_id": 9999
+}
+
+### 3.2 List all books (Expected: 200 OK)
+GET {{baseUrl}}/books
+
+### 3.3 Get book details by ID (Expected: 200 OK)
+GET {{baseUrl}}/books/1
+
+### 3.4 Get book by non-existent ID (Expected: 404 Not Found)
+GET {{baseUrl}}/books/9999
+
+### 3.5 Update book (Expected: 200 OK)
+PUT {{baseUrl}}/books/1
+Content-Type: application/json
+
+{
+  "title": "Clean Code - Updated",
+  "year": 2009,
+  "summary": "Updated summary",
+  "author_id": 1
+}
+
+### 3.6 List books by author ID (Expected: 200 OK)
+GET {{baseUrl}}/authors/1/books
+
+### 3.7 List books by non-existent author ID (Expected: 404 Not Found)
+GET {{baseUrl}}/authors/9999/books
+
+### 3.8 Delete book (Expected: 204 No Content)
+DELETE {{baseUrl}}/books/1
