@@ -89,3 +89,37 @@ def delete_book(db: Session, book_id: int) -> None:
         raise HTTPException(status_code=404, detail="Book not found")
     db.delete(book)
     db.commit()
+
+
+def search_books(
+    db: Session,
+    *,
+    author_id: int | None = None,
+    category_id: int | None = None,
+    year_from: int | None = None,
+    year_to: int | None = None,
+    q: str | None = None,
+) -> list[BookRead]:
+    stmt = select(Book).options(
+        joinedload(Book.author),
+        joinedload(Book.category),  
+    )
+
+    if author_id is not None:
+        stmt = stmt.where(Book.author_id == author_id)
+
+    if category_id is not None:
+        stmt = stmt.where(Book.category_id == category_id)
+
+    if year_from is not None:
+        stmt = stmt.where(Book.year >= year_from)  
+
+    if year_to is not None:
+        stmt = stmt.where(Book.year <= year_to) 
+
+    if q:
+        stmt = stmt.where(Book.title.ilike(f"%{q}%"))
+
+    stmt = stmt.order_by(Book.id)
+    books = db.scalars(stmt).all()
+    return [to_book_read(b) for b in books]
