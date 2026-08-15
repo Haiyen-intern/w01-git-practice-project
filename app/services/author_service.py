@@ -1,8 +1,8 @@
 from fastapi import HTTPException
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models import Author
+from app.models import Author, Book
 from app.schemas.author import AuthorCreate, AuthorUpdate
 
 
@@ -40,5 +40,15 @@ def update_author(db: Session, author_id: int, payload: AuthorUpdate) -> Author:
 
 def delete_author(db: Session, author_id: int) -> None:
     author = get_author(db, author_id)
+
+    stmt = select(func.count()).select_from(Book).where(Book.author_id == author_id)
+    book_count = db.scalar(stmt) or 0
+
+    if book_count > 0:
+        raise HTTPException(
+            status_code=409,
+            detail="Cannot delete author while books exist"
+        )
+
     db.delete(author)
     db.commit()
