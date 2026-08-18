@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.security import hash_password
+from app.core.security import create_access_token, hash_password, verify_password
 from app.models import User
 from app.schemas.user import UserCreate, UserUpdate
 
@@ -61,3 +61,12 @@ def delete_user(db: Session, user_id: int) -> None:
     user = get_user(db, user_id)
     db.delete(user)
     db.commit()
+
+
+def login(db: Session, username: str, password: str) -> str:
+    user = get_user_by_username(db, username)
+    if user is None or not verify_password(password, user.hashed_password):
+        raise HTTPException(
+            status_code=401, detail="Incorrect username or password"
+        )
+    return create_access_token(user.username)
